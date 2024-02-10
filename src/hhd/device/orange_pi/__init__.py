@@ -106,7 +106,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match vendor first to avoid issues
     try:
-        with open("/sys/class/dmi/id/system_vendor", "r") as f:
+        with open("/sys/class/dmi/id/sys_vendor", "r") as f:
             vendor = f.read().lower().strip()
 
         if "orangepi" not in vendor:
