@@ -17,9 +17,9 @@ from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
 
 class GenericControllersPlugin(HHDPlugin):
-    name = "generic_controllers"
+    name = "orange_pi_controllers"
     priority = 18
-    log = "genc"
+    log = "orpi"
 
     def __init__(self, dmi: str, dconf: dict) -> None:
         self.t = None
@@ -104,35 +104,17 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    # Match just product name
-    # if a device exists here its officially supported
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        dmi = f.read().strip()
-
-    dconf = CONFS.get(dmi, None)
-    if dconf:
-        return [GenericControllersPlugin(dmi, dconf)]
-
-    # Begin hw agnostic dmi match
-    if "ONEXPLAYER" in dmi:
-        return [GenericControllersPlugin(dmi, get_default_config(dmi, "ONEXPLAYER"))]
-
+    # Match vendor first to avoid issues
     try:
-        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
-            vendor = f.read().strip().lower()
-        if vendor == "ayn":
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
-    except Exception:
-        pass
-
-    # Fallback to chassis vendor for aya
-    try:
-        with open("/sys/class/dmi/id/board_vendor") as f:
+        with open("/sys/class/dmi/id/system_vendor", "r") as f:
             vendor = f.read().lower().strip()
 
-        if "ayaneo" in vendor:
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYA"))]
+        if "orangepi" not in vendor:
+            return []
     except Exception:
         return []
 
-    return []
+    with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
+        dmi = f.read().strip()
+
+    return [GenericControllersPlugin(dmi, CONFS.get(dmi, get_default_config(dmi)))]

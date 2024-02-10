@@ -14,19 +14,15 @@ from hhd.controller.physical.rgb import LedDevice
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
 
-from .const import (
-    BTN_MAPPINGS,
-    DEFAULT_MAPPINGS,
-)
+from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, PROTO_AXIS_MAP
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
 
-
-GAMEPAD_VID = 0x045E
-GAMEPAD_PID = 0x028E
+GAMEPAD_VIDS = [0x045E, 0x0079]
+GAMEPAD_PIDS = [0x028E, 0x181C]
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
@@ -52,7 +48,7 @@ def plugin_run(
         try:
             for d in evdev.list_devices():
                 dev = evdev.InputDevice(d)
-                if dev.info.vendor == GAMEPAD_VID and dev.info.product == GAMEPAD_PID:
+                if dev.info.vendor in GAMEPAD_VIDS and dev.info.product in GAMEPAD_PIDS:
                     found_gamepad = True
                     break
         except Exception:
@@ -65,17 +61,6 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
             first = False
             continue
-
-        # Use the oxp-platform driver if available
-        if os.path.exists("/sys/devices/platform/oxp-platform/tt_toggle"):
-            try:
-                with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
-                    f.write("1")
-                logger.info(f"Turbo button takeover enabled")
-            except Exception:
-                logger.warn(
-                    f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
-                )
 
         try:
             logger.info("Launching emulated controller.")
@@ -112,11 +97,12 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID],
-        pid=[GAMEPAD_PID],
+        vid=GAMEPAD_VIDS,
+        pid=GAMEPAD_PIDS,
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
+        axis_map=PROTO_AXIS_MAP,
         hide=True,
     )
 
