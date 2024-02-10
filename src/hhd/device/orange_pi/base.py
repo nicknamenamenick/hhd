@@ -7,14 +7,15 @@ from threading import Event as TEvent
 import evdev
 
 from hhd.controller import Multiplexer
+from hhd.controller.physical.evdev import DINPUT_AXIS_MAP
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.physical.rgb import LedDevice
 from hhd.controller.virtual.uinput import UInputDevice
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
+from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, PROTO_AXIS_MAP
+from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -102,7 +103,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
-        axis_map=PROTO_AXIS_MAP,
+        axis_map=DINPUT_AXIS_MAP,
         hide=True,
     )
 

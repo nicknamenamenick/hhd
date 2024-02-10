@@ -25,24 +25,6 @@ CONFS = {
     "NEO-01": {"name": "OrangePi NEO-01/NEO-01", "hrtimer": True},
 }
 
-PROTO_AXIS_MAP: dict[int, Axis] = to_map(
-    {
-        # Sticks
-        # Values should range from -1 to 1
-        "ls_x": [B("ABS_X")],
-        "ls_y": [B("ABS_Y")],
-        "rs_x": [B("ABS_Z")],
-        "rs_y": [B("ABS_RZ")],
-        # Triggers
-        # Values should range from -1 to 1
-        "rt": [B("ABS_BRAKE")],
-        "lt": [B("ABS_GAS")],
-        # Hat, implemented as axis. Either -1, 0, or 1
-        "hat_x": [B("ABS_HAT0X")],
-        "hat_y": [B("ABS_HAT0Y")],
-    }
-)
-
 
 def get_default_config(product_name: str):
     out = {
