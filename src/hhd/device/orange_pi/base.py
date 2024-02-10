@@ -103,7 +103,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
-        axis_map=DINPUT_AXIS_MAP,
+        # axis_map=DINPUT_AXIS_MAP,
         hide=True,
     )
 
