@@ -303,8 +303,8 @@ class GenericGamepadEvdev(Producer, Consumer):
                             )
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
-
-                        if e.code in self.postprocess and self.postprocess[e.code].get(
+                        ax = self.axis_map[e.code]
+                        if ax in self.postprocess and self.postprocess[ax].get(
                             "zero_is_middle", False
                         ):
                             mmax = self.ranges[e.code][1]
@@ -318,7 +318,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                         out.append(
                             {
                                 "type": "axis",
-                                "code": self.axis_map[e.code],
+                                "code": ax,
                                 "value": val,
                             }
                         )
