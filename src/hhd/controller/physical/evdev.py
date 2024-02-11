@@ -307,8 +307,8 @@ class GenericGamepadEvdev(Producer, Consumer):
                         if ax in self.postprocess and self.postprocess[ax].get(
                             "zero_is_middle", False
                         ):
-                            mmax = self.ranges[e.code][1]
-                            val = (e.value - mmax // 2 + 1) / mmax
+                            mmax = self.ranges[e.code][1] + 1
+                            val = (e.value - mmax // 2 + 1) / mmax * 2
                         else:
                             # Normalize
                             val = e.value / abs(
