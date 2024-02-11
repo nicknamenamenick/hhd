@@ -111,7 +111,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
-        grab=True,
+        # grab=True,
         btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
     )
 
@@ -122,18 +122,18 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         nintendo_mode=conf["nintendo_mode"].to(bool),
     )
 
-    d_volume_btn = UInputDevice(
-        name="Handheld Daemon Volume Keyboard",
-        phys="phys-hhd-vbtn",
-        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
-        btn_map={
-            "key_volumeup": EC("KEY_VOLUMEUP"),
-            "key_volumedown": EC("KEY_VOLUMEDOWN"),
-        },
-        pid=KBD_PID,
-        vid=KBD_VID,
-        output_timestamps=True,
-    )
+    # d_volume_btn = UInputDevice(
+    #     name="Handheld Daemon Volume Keyboard",
+    #     phys="phys-hhd-vbtn",
+    #     capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
+    #     btn_map={
+    #         "key_volumeup": EC("KEY_VOLUMEUP"),
+    #         "key_volumedown": EC("KEY_VOLUMEDOWN"),
+    #     },
+    #     pid=KBD_PID,
+    #     vid=KBD_VID,
+    #     output_timestamps=True,
+    # )
 
     d_rgb = LedDevice()
     if d_rgb.supported:
@@ -168,7 +168,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
-        prepare(d_volume_btn)
+        # prepare(d_volume_btn)
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
@@ -192,7 +192,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
                 if debug:
                     logger.info(evs)
 
-                d_volume_btn.consume(evs)
+                # d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
             d_rgb.consume(evs)
