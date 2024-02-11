@@ -91,6 +91,12 @@ DINPUT_AXIS_MAP: dict[int, Axis] = to_map(
         "hat_y": [B("ABS_HAT0Y")],
     }
 )
+DINPUT_AXIS_POSTPROCESS = {
+    "ls_x": {"zero_is_middle": True},
+    "ls_y": {"zero_is_middle": True},
+    "rs_x": {"zero_is_middle": True},
+    "rs_y": {"zero_is_middle": True},
+}
 
 
 def list_joysticks(input_device_dir="/dev/input"):
@@ -130,6 +136,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         grab: bool = True,
         msc_map: Mapping[int, Button] = {},
         msc_delay: float = 0.1,
+        postprocess: dict[str, dict] = {},
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -149,6 +156,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.grab = grab
         self.hidden = False
         self.queue = []
+        self.postprocess = postprocess
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -295,10 +303,17 @@ class GenericGamepadEvdev(Producer, Consumer):
                             )
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
-                        # Normalize
-                        val = e.value / abs(
-                            self.ranges[e.code][1 if e.value >= 0 else 0]
-                        )
+
+                        if e.code in self.postprocess and self.postprocess[e.code].get(
+                            "zero_is_middle", False
+                        ):
+                            mmax = self.ranges[e.code][1]
+                            val = (e.value - mmax // 2 + 1) / mmax
+                        else:
+                            # Normalize
+                            val = e.value / abs(
+                                self.ranges[e.code][1 if e.value >= 0 else 0]
+                            )
 
                         out.append(
                             {

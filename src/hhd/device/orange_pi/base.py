@@ -7,7 +7,7 @@ from threading import Event as TEvent
 import evdev
 
 from hhd.controller import Multiplexer
-from hhd.controller.physical.evdev import DINPUT_AXIS_MAP
+from hhd.controller.physical.evdev import DINPUT_AXIS_MAP, DINPUT_AXIS_POSTPROCESS
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -103,8 +103,9 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
-        # axis_map=DINPUT_AXIS_MAP,
+        axis_map=DINPUT_AXIS_MAP,
         hide=True,
+        postprocess=DINPUT_AXIS_POSTPROCESS,
     )
 
     d_kbd_1 = GenericGamepadEvdev(
